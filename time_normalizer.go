@@ -24,8 +24,13 @@ type TimeNormalizer struct {
 
 // NewTimeNormalizer 新建TimeNormalizer
 // isPreferFuture: 是否倾向使用未来时间
-func NewTimeNormalizer(isPreferFuture bool) *TimeNormalizer {
+func NewTimeNormalizer(isPreferFuture bool, timeout ...time.Duration) *TimeNormalizer {
+
 	pattern := regexp2.MustCompile(embedPattern, 0)
+	if len(timeout) > 0 {
+		pattern.MatchTimeout = timeout[0]
+	}
+
 	holiSolar := make(map[string]string)
 	holiLunar := make(map[string]string)
 	json.Unmarshal(embedHoliSolar, &holiSolar)

@@ -1,6 +1,7 @@
 package timenlp
 
 import (
+	"github.com/coderyw/Lunar-Solar-Calendar-Converter/Go/lunarsolar"
 	"regexp"
 	"strconv"
 	"strings"
@@ -478,18 +479,22 @@ func (t *TimeUnit) calcNormSetCurRelatedWeek(cur time.Time, reg string, char str
 		if err != nil {
 			week = 1
 		}
-		if week == 7 {
-			week = 0
-		}
+		//if week == 7 {
+		//	week = 0
+		//}
 		var cnt int = 1
 		if char != "" {
 			cnt = strings.Count(t.expTime, char)
 		}
-		span := (week - int(cur.Weekday())) + days*cnt
+		curWeekDay := int(cur.Weekday())
+		if curWeekDay == 0 {
+			curWeekDay = 7
+		}
+		span := (week - curWeekDay) + days*cnt
 		cur = cur.AddDate(0, 0, span)
 		if preferFuture {
 			// 处理未来时间
-			cur = t.preferFutureWeek(week, cur)
+			cur = t.preferFutureWeek(week%7, cur)
 		}
 		return cur, true
 	}
@@ -730,16 +735,15 @@ func (t *TimeUnit) normSetHoliday() {
 			arr := strings.Split(lunarDate, "-")
 			date[0], _ = strconv.Atoi(arr[0])
 			date[1], _ = strconv.Atoi(arr[1])
-			lsConverter := NewLunarSolarConverter()
-			lunar := Lunar{
-				Year:  t.tp[0],
-				Month: date[0],
-				Day:   date[1],
+			lunar := lunarsolar.Lunar{
+				LunarYear:  t.tp[0],
+				LunarMonth: date[0],
+				LunarDay:   date[1],
 			}
-			solar := lsConverter.LunarToSolar(lunar)
-			t.tp[0] = solar.Year
-			date[0] = solar.Month
-			date[1] = solar.Day
+			solar := lunarsolar.LunarToSolar(lunar)
+			t.tp[0] = solar.SolarYear
+			date[0] = solar.SolarMonth
+			date[1] = solar.SolarDay
 		} else {
 			holi = strings.TrimSuffix(holi, "节")
 			if holi == "小寒" || holi == "大寒" {
@@ -865,7 +869,8 @@ type SolarTermData struct {
 // china24St 二十世纪和二十一世纪，24节气计算
 // :param year: 年份
 // :param china_st: 节气
-//  :return: 节气日期（月, 日）
+//
+//	:return: 节气日期（月, 日）
 func (t *TimeUnit) china24St(year int, chinaSt string) []int {
 	var stKey []float64
 	if year/100 == 19 || year == 2000 {
