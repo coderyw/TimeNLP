@@ -1,5 +1,8 @@
 # TimeNLP 中文语句中的时间语义识别的golang版本   
 
+修复农历转阳历导致的死循环
+修复下周五计算成下下周五
+
 [![Go Reference](https://pkg.go.dev/badge/github.com/bububa/TimeNLP.svg)](https://pkg.go.dev/github.com/bububa/TimeNLP)
 [![Go](https://github.com/bububa/TimeNLP/actions/workflows/go.yml/badge.svg)](https://github.com/bububa/TimeNLP/actions/workflows/go.yml)
 [![goreleaser](https://github.com/bububa/TimeNLP/actions/workflows/goreleaser.yml/badge.svg)](https://github.com/bububa/TimeNLP/actions/workflows/goreleaser.yml)
